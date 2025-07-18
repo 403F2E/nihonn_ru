@@ -1,23 +1,22 @@
+mod api_handle;
 mod jisho;
-#[allow(unused)]
-mod test_req;
 
 use natural_tts::{
     models::gtts::{languages, GttsModel},
     *,
 };
 use std::{
-    error::Error,
+    error::{self, Error},
     io::{stdin, stdout, Write},
+    process::exit,
 };
 
+use api_handle::get_response;
 use jisho::*;
-use test_req::show_response;
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let _ = show_response();
-
-    // building the text-to-speech struct
+// Function that handles the speaking feature
+fn speak(input: String) -> Result<(), ErrorApp> {
+    // Building the text-to-speech struct
     let mut natural = NaturalTtsBuilder::default()
         .gtts_model(GttsModel::new(
             0.8,
@@ -25,9 +24,26 @@ fn main() -> Result<(), Box<dyn Error>> {
             "com".to_owned(),
         ))
         .default_model(Model::Gtts)
-        .build()?;
+        .build()
+        .unwrap();
 
-    // accepting users command
+    if let Err(_) = natural.say_auto(input) {
+        return Err(ErrorApp::ErrorSpeak);
+    }
+    Ok(())
+}
+
+fn main() -> Result<(), Box<dyn Error>> {
+    let resp = match get_response("apple") {
+        Ok(resp) => resp,
+        Err(e) => {
+            println!("{:?}", e);
+            exit(1);
+        }
+    };
+    println!("{resp:#?}");
+
+    // Accepting users command
     let mut input = String::new();
     loop {
         input.clear();
@@ -36,7 +52,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         stdin()
             .read_line(&mut input)
             .expect("There is an error have happened while receiving user input");
-        let _ = natural.say_auto(input.clone())?;
         match handle_command(&input.trim()) {
             Ok(()) => {
                 continue;
@@ -50,13 +65,14 @@ fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-// function that handle the Commands
+// Function that handle the Commands
 fn handle_command(command: &str) -> Result<(), ErrorApp> {
     match command {
         help if HELP.contains(&help) => Ok(()),
-        play if PLAY.contains(&play) => Ok(()),
+        play if PLAY.contains(&play) => speak(command.to_owned()),
         definition if DEFINITION.contains(&definition) => Ok(()),
         synom if SYNONYME.contains(&synom) => Ok(()),
+        quit if QUIT.contains(&quit) => Err(ErrorApp::GoodBye),
         _ => Err(ErrorApp::ErrorCommand),
     }
 }
