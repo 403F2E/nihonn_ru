@@ -5,7 +5,7 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum ErrorApp<'a> {
-    #[error("I wish learned somthing 🙂")]
+    #[error("I wish u learned somthing 🙂")]
     GoodBye,
     #[error("An error occured when reaching to the api")]
     ErrorApi,
