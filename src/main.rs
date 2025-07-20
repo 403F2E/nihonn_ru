@@ -1,47 +1,17 @@
-mod api_handle;
+mod handles;
 mod jisho;
 
-use natural_tts::{
-    models::gtts::{languages, GttsModel},
-    *,
-};
 use std::{
-    error::{self, Error},
+    error::Error,
     io::{stdin, stdout, Write},
-    process::exit,
 };
 
-use api_handle::get_response;
+use handles::{api_handle, help_menu, setup_handle};
 use jisho::*;
-
-// Function that handles the speaking feature
-fn speak(input: String) -> Result<(), ErrorApp> {
-    // Building the text-to-speech struct
-    let mut natural = NaturalTtsBuilder::default()
-        .gtts_model(GttsModel::new(
-            0.8,
-            languages::Languages::Japanese,
-            "com".to_owned(),
-        ))
-        .default_model(Model::Gtts)
-        .build()
-        .unwrap();
-
-    if let Err(_) = natural.say_auto(input) {
-        return Err(ErrorApp::ErrorSpeak);
-    }
-    Ok(())
-}
+use natural_tts::NaturalTts;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let resp = match get_response("apple") {
-        Ok(resp) => resp,
-        Err(e) => {
-            println!("{:?}", e);
-            exit(1);
-        }
-    };
-    println!("{resp:#?}");
+    let (mut resp, natural) = setup_handle()?;
 
     // Accepting users command
     let mut input = String::new();
@@ -52,8 +22,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         stdin()
             .read_line(&mut input)
             .expect("There is an error have happened while receiving user input");
-        match handle_command(&input.trim()) {
-            Ok(()) => {
+        match handle_command(&input.trim(), resp, natural.clone()) {
+            Ok(resp_state) => {
+                resp = resp_state;
                 continue;
             }
             Err(e) => {
@@ -66,13 +37,53 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 // Function that handle the Commands
-fn handle_command(command: &str) -> Result<(), ErrorApp> {
-    match command {
-        help if HELP.contains(&help) => Ok(()),
-        play if PLAY.contains(&play) => speak(command.to_owned()),
-        definition if DEFINITION.contains(&definition) => Ok(()),
-        synom if SYNONYME.contains(&synom) => Ok(()),
+fn handle_command(
+    command: &str,
+    resp: JishoResponse,
+    mut natural: NaturalTts,
+) -> Result<JishoResponse, ErrorApp> {
+    let command: Vec<&str> = command.split(" ").collect();
+
+    match command[0] {
+        // Receive the user word and reach the api for data
+        word if WORD.contains(&word) => match api_handle(command[1]) {
+            Ok(resp) => Ok(resp),
+            Err(e) => Err(e),
+        },
+
+        // Print the help menu
+        help if HELP.contains(&help) => {
+            help_menu();
+            Ok(resp)
+        }
+
+        // Play the word sounding
+        play if PLAY.contains(&play) => match command[1].parse::<usize>() {
+            Ok(num) => {
+                if num < resp.data.len() {
+                    let word = &resp.data[num - 1].slug;
+                    let _ = natural.say_auto(word.to_owned());
+                    Ok(resp)
+                } else {
+                    Err(ErrorApp::ErrorCommand(
+                        "Number high than the existant words.",
+                    ))
+                }
+            }
+            Err(_) => Err(ErrorApp::ErrorCommand(
+                "The correct form is : play [or p] (THE NUMBER OF THE WANTED WORD)",
+            )),
+        },
+
+        // Print the definitions or definition of the word
+        definition if DEFINITION.contains(&definition) => Ok(resp),
+
+        // Quit the program
         quit if QUIT.contains(&quit) => Err(ErrorApp::GoodBye),
-        _ => Err(ErrorApp::ErrorCommand),
+
+        // In case of Unknown Commands
+        _ => Err(ErrorApp::ErrorCommand(
+            "What is this command, I never heard of it 🙃",
+        )),
     }
 }
