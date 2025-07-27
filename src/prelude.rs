@@ -33,3 +33,7 @@ pub const USE_EXPLAIN: &str = "The correct form is :
 \texplain [or x] (NUMBER,NUMBER,...: a number or more of the wanted explanations. or. all: to show all the explanations)
                         \texplain all
                         \tx 1,2,3";
+pub const USE_DEFINITION: &str = "The correct form is : 
+\tdefine [or d] (NUMBER,NUMBER,...: a number or more of the wanted defined. or. all: to show all the definitions)
+                        \td all
+                        \tdefine 1,2,3 all";

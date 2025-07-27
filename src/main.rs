@@ -1,5 +1,6 @@
 mod api_request;
 mod command;
+mod command_handler;
 mod jisho;
 mod prelude;
 mod setup;
@@ -9,7 +10,7 @@ use std::{
     io::{stdin, stdout, Write},
 };
 
-use command::handle_command;
+use command_handler::handle_command;
 use setup::setup_handle;
 
 use crate::prelude::LogApp;

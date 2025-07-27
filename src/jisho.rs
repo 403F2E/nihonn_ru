@@ -48,6 +48,7 @@ impl Meta {
 
 impl WordEntry {
     pub fn word(&self) -> () {
+        println!();
         println!("Word: {}", self.slug);
     }
 
@@ -63,17 +64,28 @@ impl WordEntry {
         }
     }
 
+    pub fn word_definitions(&self) {
+        for index in 0..self.senses.len() {
+            self.senses[index].definition(index);
+        }
+        println!();
+    }
+}
+
+impl Japanese {
+    pub fn reading(&self, index: usize) {
+        let reading = self.reading.clone();
+        println!("Reading {} : ", index);
+        println!("\t-{}", reading.unwrap());
+    }
+}
+
+impl Sense {
     pub fn definition(&self, index: usize) {
         println!("Definition {}:", index);
         println!(
             "\t{}, {}",
-            self.senses[index].parts_of_speech[0], self.senses[index].english_definitions[0]
+            self.parts_of_speech[0], self.english_definitions[0]
         )
-    }
-
-    pub fn definitions(&self) {
-        for index in 0..self.senses.len() {
-            self.definition(index);
-        }
     }
 }
