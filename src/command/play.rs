@@ -5,7 +5,7 @@ use crate::{
     prelude::{LogApp, USE_PLAY},
 };
 
-pub fn play<'a>(
+pub fn speak<'a>(
     command: Vec<&str>,
     response: &JishoResponse,
     mut natural: NaturalTts,

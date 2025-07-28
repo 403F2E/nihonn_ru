@@ -3,7 +3,7 @@ use crate::{
     prelude::{LogApp, USE_EXPLAIN},
 };
 
-pub fn explain<'a>(command: Vec<&str>, response: &JishoResponse) -> Result<(), LogApp<'a>> {
+pub fn explains<'a>(command: Vec<&str>, response: &JishoResponse) -> Result<(), LogApp<'a>> {
     let length: usize = command.len();
     if length < 2 || length > 2 {
         return Err(LogApp::ErrorCommand(
@@ -11,7 +11,10 @@ pub fn explain<'a>(command: Vec<&str>, response: &JishoResponse) -> Result<(), L
         ));
     }
 
-    if !command[1].chars().all(|c| c.is_ascii_alphanumeric()) {
+    if !command[1]
+        .chars()
+        .all(|c| c.is_ascii_punctuation() || c.is_ascii_alphanumeric())
+    {
         return Err(LogApp::ErrorCommand(USE_EXPLAIN));
     }
 
@@ -23,18 +26,20 @@ pub fn explain<'a>(command: Vec<&str>, response: &JishoResponse) -> Result<(), L
         "all" => {
             for word in &response.data {
                 word.word();
-                word.readings();
-                word.word_definitions();
+                word.get_all_readings();
+                word.define_all();
             }
         }
-        _ => {
-            let nums: Vec<&str> = command[1].split(",").collect();
+        "help" => return Err(LogApp::ErrorCommand(USE_EXPLAIN)),
+        nums => {
+            let nums: Vec<&str> = nums.split(",").collect();
+            println!("{nums:?}");
             for num in nums {
                 match num.parse::<usize>() {
                     Ok(num) => {
-                        response.data[num].word();
-                        response.data[num].readings();
-                        response.data[num].word_definitions();
+                        response.data[num - 1].word();
+                        response.data[num - 1].get_all_readings();
+                        response.data[num - 1].define_all();
                     }
                     Err(_) => {
                         return Err(LogApp::ErrorCommand(

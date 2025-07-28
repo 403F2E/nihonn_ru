@@ -1,6 +1,6 @@
 use crate::{api_request::api_handle, jisho::JishoResponse, prelude::LogApp};
 
-pub fn word(command: Vec<&str>) -> Result<JishoResponse, LogApp<'_>> {
+pub fn search(command: Vec<&str>) -> Result<JishoResponse, LogApp<'_>> {
     if command[1].chars().all(|c| c.is_alphanumeric()) {
         return api_handle(command[1]);
     }

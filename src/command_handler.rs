@@ -1,7 +1,7 @@
 use std::process::Command;
 
 use crate::{
-    command::{definition, explain, play, word},
+    command::{definition::define, explain::explains, play::speak, reading::reads, word::search},
     jisho::JishoResponse,
     prelude::*,
 };
@@ -48,7 +48,7 @@ pub fn handle_command<'a, 'b>(
                 ));
             }
 
-            word::word(command)
+            search(command)
         }
 
         /* *
@@ -87,7 +87,7 @@ pub fn handle_command<'a, 'b>(
                 return Err(LogApp::ErrorCommand("The dictonary is empty."));
             }
 
-            let _ = play::play(command, &response, natural)?;
+            let _ = speak(command, &response, natural)?;
             Ok(response)
         }
 
@@ -95,7 +95,7 @@ pub fn handle_command<'a, 'b>(
          * EXPLAIN : Print all the information fetched about the searched word
          * */
         explain if EXPLAIN.contains(&explain) => {
-            let _ = explain::explain(command, &response)?;
+            let _ = explains(command, &response)?;
             Ok(response)
         }
 
@@ -105,11 +105,14 @@ pub fn handle_command<'a, 'b>(
         definition if DEFINITION.contains(&definition) => {
             if length < 2 || length > 3 {
                 return Err(LogApp::ErrorCommand(
-                    "the 'definition' command should have one argument",
+                    "the 'define' command should have one argument",
                 ));
             }
 
-            if !command[1].chars().all(|c| c.is_ascii_alphanumeric()) {
+            if !command[1]
+                .chars()
+                .all(|c| c.is_ascii_punctuation() || c.is_ascii_alphanumeric())
+            {
                 return Err(LogApp::ErrorCommand(USE_EXPLAIN));
             }
 
@@ -117,14 +120,34 @@ pub fn handle_command<'a, 'b>(
                 return Err(LogApp::ErrorCommand("The dictonary is empty!"));
             }
 
-            let _ = definition::definition(command, length, &response)?;
+            let _ = define(command, length, &response)?;
             Ok(response)
         }
 
         /* *
          * READING : Print the readings or reading of the word
          * */
-        reading if READING.contains(&reading) => Ok(response),
+        reading if READING.contains(&reading) => {
+            if length < 2 || length > 3 {
+                return Err(LogApp::ErrorCommand(
+                    "the 'reads' command should have one argument",
+                ));
+            }
+
+            if !command[1]
+                .chars()
+                .all(|c| c.is_ascii_punctuation() || c.is_ascii_alphanumeric())
+            {
+                return Err(LogApp::ErrorCommand(USE_EXPLAIN));
+            }
+
+            if response.data.len() == 0 {
+                return Err(LogApp::ErrorCommand("The dictonary is empty!"));
+            }
+
+            let _ = reads(command, length, &response)?;
+            Ok(response)
+        }
 
         /* *
          * CLEAR : Clear the terminal

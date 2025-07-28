@@ -16,14 +16,14 @@ pub enum LogApp<'a> {
 pub const QUIT: [&str; 2] = ["exit", "e"];
 pub const CLEAR: [&str; 2] = ["clear", "c"];
 pub const HELP: [&str; 3] = ["help", "h", "?"];
-pub const WORD: [&str; 2] = ["word", "w"];
+pub const WORD: [&str; 2] = ["search", "s"];
 pub const PLAY: [&str; 2] = ["play", "p"];
 pub const EXPLAIN: [&str; 2] = ["explain", "x"];
-pub const READING: [&str; 2] = ["read", "r"];
-pub const DEFINITION: [&str; 2] = ["definition", "d"];
+pub const READING: [&str; 2] = ["reads", "r"];
+pub const DEFINITION: [&str; 2] = ["define", "d"];
 
 // all way to use for all commands
-pub const USE_WORD: &str = "word [or w] (WORD)";
+pub const USE_WORD: &str = "search [or s] (WORD)";
 pub const USE_PLAY: &str = "The correct form is : 
 \tplay [or p] (NUMBER: number of the wanted word. or. WORD: a word of your chose to get played)
                             examples:
@@ -37,3 +37,7 @@ pub const USE_DEFINITION: &str = "The correct form is :
 \tdefine [or d] (NUMBER,NUMBER,...: a number or more of the wanted defined. or. all: to show all the definitions)
                         \td all
                         \tdefine 1,2,3 all";
+pub const USE_READING: &str = "The correct form is : 
+\treads [or r] (NUMBER,NUMBER,...: a number or more of the wanted defined. or. all: to show all the definitions)
+                        \tr all
+                        \treads 1,2,3 all";

@@ -52,37 +52,32 @@ impl WordEntry {
         println!("Word: {}", self.slug);
     }
 
-    pub fn reading(&self, index: usize) {
-        println!("Reading: ");
-        println!("\t{:?}", self.japanese[index].reading);
-    }
-
-    pub fn readings(&self) {
+    pub fn get_all_readings(&self) {
+        println!("Readings : ");
         for index in 0..self.japanese.len() {
-            println!("Reading {}: ", index);
-            println!("\t{:?}", self.japanese[index].reading);
+            self.japanese[index].get_reading(index);
         }
     }
 
-    pub fn word_definitions(&self) {
+    pub fn define_all(&self) {
         for index in 0..self.senses.len() {
-            self.senses[index].definition(index);
+            self.senses[index].define_one(index);
         }
         println!();
     }
 }
 
 impl Japanese {
-    pub fn reading(&self, index: usize) {
+    pub fn get_reading(&self, index: usize) {
         let reading = self.reading.clone();
-        println!("Reading {} : ", index);
-        println!("\t-{}", reading.unwrap());
+        println!("\tReading {} : ", index + 1);
+        println!("\t\t-{}", reading.unwrap());
     }
 }
 
 impl Sense {
-    pub fn definition(&self, index: usize) {
-        println!("Definition {}:", index);
+    pub fn define_one(&self, index: usize) {
+        println!("Definition {}:", index + 1);
         println!(
             "\t{}, {}",
             self.parts_of_speech[0], self.english_definitions[0]

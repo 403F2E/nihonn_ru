@@ -1,9 +1,9 @@
 use crate::{
     jisho::JishoResponse,
-    prelude::{LogApp, USE_DEFINITION},
+    prelude::{LogApp, USE_READING},
 };
 
-pub fn define<'a>(
+pub fn reads<'a>(
     command: Vec<&str>,
     length: usize,
     response: &JishoResponse,
@@ -14,7 +14,7 @@ pub fn define<'a>(
             "all" => {
                 for word in &response.data {
                     println!("for word : {} ", word.slug);
-                    word.define_all();
+                    word.get_all_readings();
                 }
             }
             nums => {
@@ -24,11 +24,11 @@ pub fn define<'a>(
                     for num in &nums {
                         match num.parse::<usize>() {
                             Ok(num) => {
-                                word.senses[num - 1].define_one(num - 1);
+                                word.japanese[num].get_reading(num - 1);
                             }
                             Err(_) => {
                                 return Err(LogApp::ErrorCommand(
-                                    "The 'define' command accept only numbers or 'all' as argument.",
+                                    "The 'reads' command accept only numbers or 'all' as argument.",
                                 ));
                             }
                         }
@@ -47,9 +47,9 @@ pub fn define<'a>(
                     for num in index.iter() {
                         match num.parse::<usize>() {
                             Ok(num) => {
-                                word.senses[num - 1].define_one(num - 1);
+                                word.japanese[num - 1].get_reading(num - 1);
                             }
-                            Err(_) => return Err(LogApp::ErrorCommand(USE_DEFINITION)),
+                            Err(_) => return Err(LogApp::ErrorCommand(USE_READING)),
                         }
                     }
                 }
@@ -61,11 +61,11 @@ pub fn define<'a>(
                         for num in nums {
                             match num.parse::<usize>() {
                                 Ok(num) => {
-                                    response.data[num - 1].define_all();
+                                    response.data[num - 1].get_all_readings();
                                 }
                                 Err(_) => {
                                     return Err(LogApp::ErrorCommand(
-                                        "The 'define' command accept only numbers or 'all' as arguments.",
+                                        "The 'reads' command accept only numbers or 'all' as arguments.",
                                     ));
                                 }
                             }
@@ -80,18 +80,18 @@ pub fn define<'a>(
                                     for few in &fews {
                                         match few.parse::<usize>() {
                                             Ok(few) => {
-                                                response.data[num - 1].senses[few - 1]
-                                                    .define_one(few - 1);
+                                                response.data[num - 1].japanese[few - 1]
+                                                    .get_reading(few - 1);
                                             }
                                             Err(_) => {
-                                                return Err(LogApp::ErrorCommand(USE_DEFINITION));
+                                                return Err(LogApp::ErrorCommand(USE_READING));
                                             }
                                         }
                                     }
                                 }
                                 Err(_) => {
                                     return Err(LogApp::ErrorCommand(
-                                        "The 'define' command accept only numbers or 'all' as arguments.",
+                                        "The 'reads' command accept only numbers or 'all' as arguments.",
                                     ));
                                 }
                             }
