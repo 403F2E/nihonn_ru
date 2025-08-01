@@ -1,6 +1,6 @@
 use crate::{
-    jisho::JishoResponse,
-    prelude::{LogApp, USE_READING},
+    constants::USE_READING,
+    jisho::{JishoResponse, LogApp},
 };
 
 pub fn reads<'a>(
@@ -27,7 +27,7 @@ pub fn reads<'a>(
                                 word.japanese[num].get_reading(num - 1);
                             }
                             Err(_) => {
-                                return Err(LogApp::ErrorCommand(
+                                return Err(LogApp::CommandError(
                                     "The 'reads' command accept only numbers or 'all' as argument.",
                                 ));
                             }
@@ -49,7 +49,7 @@ pub fn reads<'a>(
                             Ok(num) => {
                                 word.japanese[num - 1].get_reading(num - 1);
                             }
-                            Err(_) => return Err(LogApp::ErrorCommand(USE_READING)),
+                            Err(_) => return Err(LogApp::CommandError(USE_READING)),
                         }
                     }
                 }
@@ -64,7 +64,7 @@ pub fn reads<'a>(
                                     response.data[num - 1].get_all_readings();
                                 }
                                 Err(_) => {
-                                    return Err(LogApp::ErrorCommand(
+                                    return Err(LogApp::CommandError(
                                         "The 'reads' command accept only numbers or 'all' as arguments.",
                                     ));
                                 }
@@ -84,13 +84,13 @@ pub fn reads<'a>(
                                                     .get_reading(few - 1);
                                             }
                                             Err(_) => {
-                                                return Err(LogApp::ErrorCommand(USE_READING));
+                                                return Err(LogApp::CommandError(USE_READING));
                                             }
                                         }
                                     }
                                 }
                                 Err(_) => {
-                                    return Err(LogApp::ErrorCommand(
+                                    return Err(LogApp::CommandError(
                                         "The 'reads' command accept only numbers or 'all' as arguments.",
                                     ));
                                 }

@@ -1,8 +1,8 @@
 use natural_tts::NaturalTts;
 
 use crate::{
-    jisho::JishoResponse,
-    prelude::{LogApp, USE_PLAY},
+    constants::USE_PLAY,
+    jisho::{JishoResponse, LogApp},
 };
 
 pub fn speak<'a>(
@@ -13,7 +13,7 @@ pub fn speak<'a>(
     match command[1].parse::<usize>() {
         Ok(num) => {
             if num > response.data.len() {
-                return Err(LogApp::ErrorCommand(
+                return Err(LogApp::CommandError(
                     "The number given is greater than the words found for your search",
                 ));
             }
@@ -25,7 +25,7 @@ pub fn speak<'a>(
             }
         }
 
-        Err(_) => return Err(LogApp::ErrorCommand(USE_PLAY)),
+        Err(_) => return Err(LogApp::CommandError(USE_PLAY)),
     }
 
     if let Err(e) = natural.say_auto(command[1].to_owned()) {

@@ -1,6 +1,6 @@
 use reqwest;
 
-use crate::{jisho::JishoResponse, prelude::LogApp};
+use crate::jisho::{JishoResponse, LogApp};
 
 #[tokio::main]
 pub async fn api_handle(keyword: &str) -> Result<JishoResponse, LogApp> {

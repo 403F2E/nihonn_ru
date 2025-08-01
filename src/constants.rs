@@ -1,18 +1,6 @@
-use thiserror::Error;
+/// Constants used in the commands and help sentences
 
-#[derive(Error, Debug)]
-pub enum LogApp<'a> {
-    #[error("I wish u learned somthing 🙂")]
-    GoodBye,
-    #[error("An error occured when reaching to the api")]
-    ErrorApi,
-    #[error("Command Error: {0}")]
-    ErrorCommand(&'a str),
-    #[error("An error has occured when trying to peak: \n{0}")]
-    ErrorSpeak(Box<dyn std::error::Error>),
-}
-
-// all the available commands
+/// all the available commands
 pub const QUIT: [&str; 2] = ["exit", "e"];
 pub const CLEAR: [&str; 2] = ["clear", "c"];
 pub const HELP: [&str; 3] = ["help", "h", "?"];
@@ -22,8 +10,8 @@ pub const EXPLAIN: [&str; 2] = ["explain", "x"];
 pub const READING: [&str; 2] = ["reads", "r"];
 pub const DEFINITION: [&str; 2] = ["define", "d"];
 
-// all way to use for all commands
-pub const USE_WORD: &str = "search [or s] (WORD)";
+/// Help sentences
+pub const USE_WORD: &str = "search [or s] (WORD: a word to fetch from the dictianory api)";
 pub const USE_PLAY: &str = "The correct form is : 
 \tplay [or p] (NUMBER: number of the wanted word. or. WORD: a word of your chose to get played)
                             examples:

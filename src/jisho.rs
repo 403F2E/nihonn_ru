@@ -1,8 +1,28 @@
 #![allow(dead_code)]
 
-use serde::Deserialize;
+// * *
+// * used types overall the projects
+// * *
 
-// Structers to parse the response into
+use serde::Deserialize;
+use thiserror::Error;
+
+// Error type to handle types
+#[derive(Error, Debug)]
+pub enum LogApp<'a> {
+    #[error("I wish u learned somthing 🙂")]
+    GoodBye,
+    #[error("An error occured when reaching to the api")]
+    ErrorApi,
+    #[error("Command Info : {0}")]
+    CommandInfo(&'a str),
+    #[error("Command Error: {0}")]
+    CommandError(&'a str),
+    #[error("An error has occured when trying to peak: \n{0}")]
+    ErrorSpeak(Box<dyn std::error::Error>),
+}
+
+// Structers to parse the api response into
 #[derive(Debug, Deserialize, Clone)]
 pub struct JishoResponse {
     meta: Meta,

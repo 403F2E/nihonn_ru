@@ -1,8 +1,8 @@
 mod api_request;
 mod command;
 mod command_handler;
+mod constants;
 mod jisho;
-mod prelude;
 mod setup;
 
 use std::{
@@ -11,12 +11,11 @@ use std::{
 };
 
 use command_handler::handle_command;
+use jisho::{JishoResponse, LogApp};
 use setup::setup_handle;
 
-use crate::prelude::LogApp;
-
 fn main() -> Result<(), Box<dyn Error>> {
-    let (mut response, natural): (jisho::JishoResponse, natural_tts::NaturalTts) = setup_handle()?;
+    let (mut response, natural): (JishoResponse, natural_tts::NaturalTts) = setup_handle()?;
 
     /* *
      * Receiving user's command

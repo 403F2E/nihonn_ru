@@ -1,6 +1,6 @@
 use crate::{
-    jisho::JishoResponse,
-    prelude::{LogApp, USE_DEFINITION},
+    constants::USE_DEFINITION,
+    jisho::{JishoResponse, LogApp},
 };
 
 pub fn define<'a>(
@@ -27,7 +27,7 @@ pub fn define<'a>(
                                 word.senses[num - 1].define_one(num - 1);
                             }
                             Err(_) => {
-                                return Err(LogApp::ErrorCommand(
+                                return Err(LogApp::CommandError(
                                     "The 'define' command accept only numbers or 'all' as argument.",
                                 ));
                             }
@@ -49,7 +49,7 @@ pub fn define<'a>(
                             Ok(num) => {
                                 word.senses[num - 1].define_one(num - 1);
                             }
-                            Err(_) => return Err(LogApp::ErrorCommand(USE_DEFINITION)),
+                            Err(_) => return Err(LogApp::CommandError(USE_DEFINITION)),
                         }
                     }
                 }
@@ -64,7 +64,7 @@ pub fn define<'a>(
                                     response.data[num - 1].define_all();
                                 }
                                 Err(_) => {
-                                    return Err(LogApp::ErrorCommand(
+                                    return Err(LogApp::CommandError(
                                         "The 'define' command accept only numbers or 'all' as arguments.",
                                     ));
                                 }
@@ -84,13 +84,13 @@ pub fn define<'a>(
                                                     .define_one(few - 1);
                                             }
                                             Err(_) => {
-                                                return Err(LogApp::ErrorCommand(USE_DEFINITION));
+                                                return Err(LogApp::CommandError(USE_DEFINITION));
                                             }
                                         }
                                     }
                                 }
                                 Err(_) => {
-                                    return Err(LogApp::ErrorCommand(
+                                    return Err(LogApp::CommandError(
                                         "The 'define' command accept only numbers or 'all' as arguments.",
                                     ));
                                 }
