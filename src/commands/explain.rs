@@ -1,12 +1,12 @@
 use crate::{
     constants::USE_EXPLAIN,
-    jisho::{JishoResponse, LogApp},
+    jisho::{AppLog, JishoResponse},
 };
 
-pub fn explains<'a>(command: Vec<&str>, response: &JishoResponse) -> Result<(), LogApp<'a>> {
+pub fn explains<'a>(command: Vec<&str>, response: &JishoResponse) -> Result<(), AppLog<'a>> {
     let length: usize = command.len();
     if length < 2 || length > 2 {
-        return Err(LogApp::CommandError(
+        return Err(AppLog::CommandError(
             "the 'explain' command should have one argument",
         ));
     }
@@ -15,14 +15,15 @@ pub fn explains<'a>(command: Vec<&str>, response: &JishoResponse) -> Result<(), 
         .chars()
         .all(|c| c.is_ascii_punctuation() || c.is_ascii_alphanumeric())
     {
-        return Err(LogApp::CommandError(USE_EXPLAIN));
+        return Err(AppLog::CommandInfo(USE_EXPLAIN));
     }
 
     if response.data.len() == 0 {
-        return Err(LogApp::CommandInfo("The dictionary is empty!"));
+        return Err(AppLog::CommandInfo("The dictionary is empty!"));
     }
 
     match command[1] {
+        "help" => return Err(AppLog::CommandInfo(USE_EXPLAIN)),
         "all" => {
             for word in &response.data {
                 word.word();
@@ -30,15 +31,13 @@ pub fn explains<'a>(command: Vec<&str>, response: &JishoResponse) -> Result<(), 
                 word.define_all();
             }
         }
-        "help" => return Err(LogApp::CommandError(USE_EXPLAIN)),
         nums => {
             let nums: Vec<&str> = nums.split(",").collect();
-            println!("{nums:?}");
             for num in nums {
                 match num.parse::<usize>() {
                     Ok(num) => {
                         if num >= length {
-                            return Err(LogApp::CommandInfo(
+                            return Err(AppLog::CommandInfo(
                                 "The dictionary only have {length:?}. {num:?} not valid.",
                             ));
                         }
@@ -47,7 +46,7 @@ pub fn explains<'a>(command: Vec<&str>, response: &JishoResponse) -> Result<(), 
                         response.data[num - 1].define_all();
                     }
                     Err(_) => {
-                        return Err(LogApp::CommandError(
+                        return Err(AppLog::CommandError(
                             "The 'explain' command accept only numbers or all as argument.",
                         ));
                     }

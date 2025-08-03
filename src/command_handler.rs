@@ -1,9 +1,9 @@
 use std::process::Command;
 
 use crate::{
-    command::{definition::define, explain::explains, play::speak, reading::reads, word::search},
+    commands::{definition::define, explain::explains, play::speak, reading::reads, word::search},
     constants::*,
-    jisho::{JishoResponse, LogApp},
+    jisho::{AppLog, JishoResponse},
 };
 use natural_tts::NaturalTts;
 
@@ -33,7 +33,7 @@ pub fn handle_command<'a, 'b>(
     command: &'a str,
     response: JishoResponse,
     natural: NaturalTts,
-) -> Result<JishoResponse, LogApp<'a>> {
+) -> Result<JishoResponse, AppLog<'a>> {
     let command: Vec<&str> = command.split(" ").collect();
     let length: usize = command.len();
 
@@ -43,13 +43,13 @@ pub fn handle_command<'a, 'b>(
          * */
         word if WORD.contains(&word) => {
             if length < 2 || length > 2 {
-                return Err(LogApp::CommandError(
+                return Err(AppLog::CommandError(
                     "The 'word' command should use one argument.",
                 ));
             }
 
             match command[1] {
-                "help" => return Err(LogApp::CommandInfo(USE_WORD)),
+                "help" => return Err(AppLog::CommandInfo(USE_WORD)),
                 _ => search(command),
             }
         }
@@ -59,7 +59,7 @@ pub fn handle_command<'a, 'b>(
          * */
         help if HELP.contains(&help) => {
             if length > 1 {
-                return Err(LogApp::CommandError(
+                return Err(AppLog::CommandError(
                     "The 'help' command does not have any argument.",
                 ));
             }
@@ -73,7 +73,7 @@ pub fn handle_command<'a, 'b>(
          * */
         play if PLAY.contains(&play) => {
             if length < 2 || length > 2 {
-                return Err(LogApp::CommandError(
+                return Err(AppLog::CommandError(
                     "you can only play one word at the time.",
                 ));
             }
@@ -83,14 +83,19 @@ pub fn handle_command<'a, 'b>(
                 command[1].chars().all(|c| c.is_alphanumeric()),
             );
             if !is_numeric && !is_alphanumeric {
-                return Err(LogApp::CommandError(USE_PLAY));
+                return Err(AppLog::CommandError(USE_PLAY));
             }
 
             if response.data.len() == 0 {
-                return Err(LogApp::CommandError("The dictonary is empty."));
+                return Err(AppLog::CommandError("The dictonary is empty."));
             }
 
-            let _ = speak(command, &response, natural)?;
+            match command[1] {
+                "help" => return Err(AppLog::CommandInfo(USE_PLAY)),
+                _ => {
+                    let _ = speak(command, &response, natural)?;
+                }
+            }
             Ok(response)
         }
 
@@ -107,7 +112,7 @@ pub fn handle_command<'a, 'b>(
          * */
         definition if DEFINITION.contains(&definition) => {
             if length < 2 || length > 3 {
-                return Err(LogApp::CommandError(
+                return Err(AppLog::CommandError(
                     "the 'define' command should have one argument",
                 ));
             }
@@ -116,11 +121,11 @@ pub fn handle_command<'a, 'b>(
                 .chars()
                 .all(|c| c.is_ascii_punctuation() || c.is_ascii_alphanumeric())
             {
-                return Err(LogApp::CommandError(USE_EXPLAIN));
+                return Err(AppLog::CommandError(USE_EXPLAIN));
             }
 
             if response.data.len() == 0 {
-                return Err(LogApp::CommandInfo("The dictonary is empty!"));
+                return Err(AppLog::CommandInfo("The dictonary is empty!"));
             }
 
             let _ = define(command, length, &response)?;
@@ -132,7 +137,7 @@ pub fn handle_command<'a, 'b>(
          * */
         reading if READING.contains(&reading) => {
             if length < 2 || length > 3 {
-                return Err(LogApp::CommandError(
+                return Err(AppLog::CommandError(
                     "the 'reads' command should have one argument",
                 ));
             }
@@ -141,11 +146,11 @@ pub fn handle_command<'a, 'b>(
                 .chars()
                 .all(|c| c.is_ascii_punctuation() || c.is_ascii_alphanumeric())
             {
-                return Err(LogApp::CommandError(USE_EXPLAIN));
+                return Err(AppLog::CommandError(USE_EXPLAIN));
             }
 
             if response.data.len() == 0 {
-                return Err(LogApp::CommandInfo("The dictonary is empty!"));
+                return Err(AppLog::CommandInfo("The dictonary is empty!"));
             }
 
             let _ = reads(command, length, &response)?;
@@ -157,7 +162,7 @@ pub fn handle_command<'a, 'b>(
          * */
         clear if CLEAR.contains(&clear) => {
             if length > 1 {
-                return Err(LogApp::CommandError(
+                return Err(AppLog::CommandError(
                     "The 'clear' command takes no arguments.",
                 ));
             }
@@ -174,12 +179,12 @@ pub fn handle_command<'a, 'b>(
         /* *
          * EXIT : Quit the program
          * */
-        quit if QUIT.contains(&quit) => Err(LogApp::GoodBye),
+        quit if QUIT.contains(&quit) => Err(AppLog::GoodBye),
 
         /* *
          * UNKNOWN COMMAND : In case of Unknown Commands
          * */
-        _ => Err(LogApp::CommandInfo(
+        _ => Err(AppLog::CommandInfo(
             "What is this command, I never heard of it 🙃",
         )),
     }

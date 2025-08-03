@@ -1,6 +1,6 @@
 mod api_request;
-mod command;
 mod command_handler;
+mod commands;
 mod constants;
 mod jisho;
 mod setup;
@@ -11,7 +11,7 @@ use std::{
 };
 
 use command_handler::handle_command;
-use jisho::{JishoResponse, LogApp};
+use jisho::{AppLog, JishoResponse};
 use setup::setup_handle;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -36,7 +36,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Err(e) => {
                 println!("{}", e);
                 match e {
-                    LogApp::GoodBye => {
+                    AppLog::GoodBye => {
                         break;
                     }
                     _ => {

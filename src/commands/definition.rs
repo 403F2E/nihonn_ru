@@ -1,16 +1,17 @@
 use crate::{
     constants::USE_DEFINITION,
-    jisho::{JishoResponse, LogApp},
+    jisho::{AppLog, JishoResponse},
 };
 
 pub fn define<'a>(
     command: Vec<&str>,
     length: usize,
     response: &JishoResponse,
-) -> Result<(), LogApp<'a>> {
+) -> Result<(), AppLog<'a>> {
     // in case of single argument
     if length == 2 {
         match command[1] {
+            "help" => return Err(AppLog::CommandInfo(USE_DEFINITION)),
             "all" => {
                 for word in &response.data {
                     println!("for word : {} ", word.slug);
@@ -27,7 +28,7 @@ pub fn define<'a>(
                                 word.senses[num - 1].define_one(num - 1);
                             }
                             Err(_) => {
-                                return Err(LogApp::CommandError(
+                                return Err(AppLog::CommandError(
                                     "The 'define' command accept only numbers or 'all' as argument.",
                                 ));
                             }
@@ -49,7 +50,7 @@ pub fn define<'a>(
                             Ok(num) => {
                                 word.senses[num - 1].define_one(num - 1);
                             }
-                            Err(_) => return Err(LogApp::CommandError(USE_DEFINITION)),
+                            Err(_) => return Err(AppLog::CommandInfo(USE_DEFINITION)),
                         }
                     }
                 }
@@ -64,7 +65,7 @@ pub fn define<'a>(
                                     response.data[num - 1].define_all();
                                 }
                                 Err(_) => {
-                                    return Err(LogApp::CommandError(
+                                    return Err(AppLog::CommandError(
                                         "The 'define' command accept only numbers or 'all' as arguments.",
                                     ));
                                 }
@@ -84,13 +85,13 @@ pub fn define<'a>(
                                                     .define_one(few - 1);
                                             }
                                             Err(_) => {
-                                                return Err(LogApp::CommandError(USE_DEFINITION));
+                                                return Err(AppLog::CommandInfo(USE_DEFINITION));
                                             }
                                         }
                                     }
                                 }
                                 Err(_) => {
-                                    return Err(LogApp::CommandError(
+                                    return Err(AppLog::CommandError(
                                         "The 'define' command accept only numbers or 'all' as arguments.",
                                     ));
                                 }

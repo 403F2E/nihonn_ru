@@ -1,20 +1,21 @@
 #![allow(dead_code)]
 
-// * *
-// * used types overall the projects
-// * *
-
+/// * *
+/// * used types overall the projects
+/// * *
 use serde::Deserialize;
 use thiserror::Error;
 
+use crate::constants::{HIRAGANA_ROMANJI, KATAKANA_ROMANJI};
+
 // Error type to handle types
 #[derive(Error, Debug)]
-pub enum LogApp<'a> {
+pub enum AppLog<'a> {
     #[error("I wish u learned somthing 🙂")]
     GoodBye,
     #[error("An error occured when reaching to the api")]
     ErrorApi,
-    #[error("Command Info : {0}")]
+    #[error("{0}")]
     CommandInfo(&'a str),
     #[error("Command Error: {0}")]
     CommandError(&'a str),
@@ -89,9 +90,17 @@ impl WordEntry {
 
 impl Japanese {
     pub fn get_reading(&self, index: usize) {
-        let reading = self.reading.clone();
+        let reading = self.reading.clone().unwrap();
         println!("\tReading {} : ", index + 1);
-        println!("\t\t-{}", reading.unwrap());
+        print!("\t\t- {} (", reading);
+        for c in reading.chars() {
+            let romanji = HIRAGANA_ROMANJI
+                .get(&c)
+                .or_else(|| KATAKANA_ROMANJI.get(&c))
+                .unwrap_or(&"?");
+            print!("{}", romanji);
+        }
+        print!(")\n");
     }
 }
 

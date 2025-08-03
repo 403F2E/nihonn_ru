@@ -1,9 +1,9 @@
 use reqwest;
 
-use crate::jisho::{JishoResponse, LogApp};
+use crate::jisho::{AppLog, JishoResponse};
 
 #[tokio::main]
-pub async fn api_handle(keyword: &str) -> Result<JishoResponse, LogApp> {
+pub async fn api_handle(keyword: &str) -> Result<JishoResponse, AppLog> {
     let full_url: String = format!("https://jisho.org/api/v1/search/words?keyword={}", keyword);
     let response: JishoResponse = match reqwest::get(&full_url)
         .await
@@ -13,7 +13,7 @@ pub async fn api_handle(keyword: &str) -> Result<JishoResponse, LogApp> {
     {
         Ok(resp) => resp,
         Err(_) => {
-            return Err(LogApp::ErrorApi);
+            return Err(AppLog::ErrorApi);
         }
     };
     Ok(response)

@@ -1,16 +1,17 @@
 use crate::{
     constants::USE_READING,
-    jisho::{JishoResponse, LogApp},
+    jisho::{AppLog, JishoResponse},
 };
 
 pub fn reads<'a>(
     command: Vec<&str>,
     length: usize,
     response: &JishoResponse,
-) -> Result<(), LogApp<'a>> {
+) -> Result<(), AppLog<'a>> {
     // in case of single argument
     if length == 2 {
         match command[1] {
+            "help" => return Err(AppLog::CommandInfo(USE_READING)),
             "all" => {
                 for word in &response.data {
                     println!("for word : {} ", word.slug);
@@ -24,10 +25,10 @@ pub fn reads<'a>(
                     for num in &nums {
                         match num.parse::<usize>() {
                             Ok(num) => {
-                                word.japanese[num].get_reading(num - 1);
+                                word.japanese[num - 1].get_reading(num - 1);
                             }
                             Err(_) => {
-                                return Err(LogApp::CommandError(
+                                return Err(AppLog::CommandError(
                                     "The 'reads' command accept only numbers or 'all' as argument.",
                                 ));
                             }
@@ -49,7 +50,7 @@ pub fn reads<'a>(
                             Ok(num) => {
                                 word.japanese[num - 1].get_reading(num - 1);
                             }
-                            Err(_) => return Err(LogApp::CommandError(USE_READING)),
+                            Err(_) => return Err(AppLog::CommandInfo(USE_READING)),
                         }
                     }
                 }
@@ -64,7 +65,7 @@ pub fn reads<'a>(
                                     response.data[num - 1].get_all_readings();
                                 }
                                 Err(_) => {
-                                    return Err(LogApp::CommandError(
+                                    return Err(AppLog::CommandError(
                                         "The 'reads' command accept only numbers or 'all' as arguments.",
                                     ));
                                 }
@@ -84,13 +85,13 @@ pub fn reads<'a>(
                                                     .get_reading(few - 1);
                                             }
                                             Err(_) => {
-                                                return Err(LogApp::CommandError(USE_READING));
+                                                return Err(AppLog::CommandInfo(USE_READING));
                                             }
                                         }
                                     }
                                 }
                                 Err(_) => {
-                                    return Err(LogApp::CommandError(
+                                    return Err(AppLog::CommandError(
                                         "The 'reads' command accept only numbers or 'all' as arguments.",
                                     ));
                                 }
