@@ -1,9 +1,6 @@
 use natural_tts::NaturalTts;
 
-use crate::{
-    constants::USE_PLAY,
-    jisho::{AppLog, JishoResponse},
-};
+use crate::jisho::{AppLog, JishoResponse};
 
 pub fn speak<'a>(
     command: Vec<&str>,
@@ -18,18 +15,18 @@ pub fn speak<'a>(
                 ));
             }
 
-            let word = &response.data[num - 1].slug;
+            let word: &String = &response.data[num - 1].slug;
 
             if let Err(e) = natural.say_auto(word.to_owned()) {
                 return Err(AppLog::ErrorSpeak(e));
             }
         }
 
-        Err(_) => return Err(AppLog::CommandInfo(USE_PLAY)),
-    }
-
-    if let Err(e) = natural.say_auto(command[1].to_owned()) {
-        return Err(AppLog::ErrorSpeak(e));
+        Err(_) => {
+            if let Err(e) = natural.say_auto(command[1].to_owned()) {
+                return Err(AppLog::ErrorSpeak(e));
+            }
+        }
     }
 
     Ok(())
