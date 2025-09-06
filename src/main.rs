@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     /* *
      * Receiving user's command
      * */
-    let mut input = String::new();
+    let mut input: String = String::new();
     loop {
         input.clear();
         print!("Enter command > ");

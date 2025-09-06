@@ -3,7 +3,7 @@ use crate::{
     jisho::{AppLog, JishoResponse},
 };
 
-pub fn search(command: Vec<&str>) -> Result<JishoResponse, AppLog<'_>> {
+pub fn search<'a>(command: Vec<&'a str>) -> Result<JishoResponse, AppLog<'a>> {
     if command[1].chars().all(|c| c.is_alphanumeric()) {
         return api_handle(command[1]);
     }

@@ -29,8 +29,8 @@ fn help_menu() {
 }
 
 /// Function that parses and executes the Commands
-pub fn handle_command<'a, 'b>(
-    command: &'a str,
+pub fn handle_command<'a, 'b: 'a>(
+    command: &'b str,
     response: JishoResponse,
     natural: NaturalTts,
 ) -> Result<JishoResponse, AppLog<'a>> {

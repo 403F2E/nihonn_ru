@@ -3,7 +3,7 @@ use reqwest;
 use crate::jisho::{AppLog, JishoResponse};
 
 #[tokio::main]
-pub async fn api_handle(keyword: &'static str) -> Result<JishoResponse, AppLog> {
+pub async fn api_handle<'a>(keyword: &'a str) -> Result<JishoResponse, AppLog<'a>> {
     let full_url: String = format!("https://jisho.org/api/v1/search/words?keyword={}", keyword);
     let response: JishoResponse = match reqwest::get(&full_url)
         .await
